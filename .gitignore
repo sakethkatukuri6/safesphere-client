@@ -1,0 +1,35 @@
+# --- Build output ---
+target/
+*.jar
+*.war
+!.mvn/wrapper/maven-wrapper.jar
+
+# --- Local database (SQLite, M6) ---
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+backend/data/
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Secrets: never commit real values ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+
+# --- IDE / OS ---
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+.DS_Store
+Thumbs.db
