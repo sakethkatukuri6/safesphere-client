@@ -81,6 +81,16 @@
                 <version>3.2.5</version>
             </plugin>
 
+            <!-- mvn exec:java -Dexec.mainClass=com.safesphere.SafeSphereApplication -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <mainClass>com.safesphere.SafeSphereApplication</mainClass>
+                </configuration>
+            </plugin>
+
             <!-- Produces the executable runnable JAR: java -jar target/safesphere-backend.jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -110,8 +110,10 @@ public final class IncidentService {
     public String handleSos(SosTriggerEvent event) {
         Instant now = clock.instant();
         String capsuleId = idGenerator.next();
+        // Create the engine first, then register this exact instance, so the registry and the
+        // transitions below are working on one object.
         EmergencyStateEngine engine = new EmergencyStateEngine();
-        registry.register(capsuleId);
+        registry.register(capsuleId, engine);
 
         requireAccepted(engine.transitionTo(FsmState.SUSPICIOUS), capsuleId, "SAFE -> SUSPICIOUS");
         if (event.trigger_type() == TriggerType.CRASH_DETECTED) {

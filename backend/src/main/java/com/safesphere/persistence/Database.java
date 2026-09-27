@@ -25,10 +25,24 @@ public final class Database implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(Database.class);
 
-    /** The default local file, relative to the working directory. Ignored by git. */
-    public static final String DEFAULT_PATH = "backend/data/safesphere.db";
+    /**
+     * The default local file, relative to the working directory the process is started in. Run from
+     * {@code backend/}, that is {@code backend/data/safesphere.db}, which is git-ignored. Ignored by
+     * git; created on first start.
+     */
+    public static final String DEFAULT_PATH = "data/safesphere.db";
 
     private final String jdbcUrl;
+
+    /**
+     * Keeps an in-memory database alive.
+     *
+     * <p>A {@code mode=memory} SQLite database exists only while at least one connection is open.
+     * Since every unit of work opens and closes its own connection, the schema would otherwise be
+     * destroyed between operations, so one connection is held for the lifetime of this object. Null
+     * for file-backed databases, which persist on their own.
+     */
+    private Connection keeper;
 
     /**
      * Opens (or creates) a database file.
@@ -39,9 +53,30 @@ public final class Database implements AutoCloseable {
         if (path == null || path.isBlank()) {
             throw new IllegalArgumentException("database path is required");
         }
-        this.jdbcUrl = ":memory:".equals(path)
-                ? "jdbc:sqlite:file:safesphere_shared_mem?mode=memory&cache=shared"
-                : "jdbc:sqlite:" + path;
+        if (":memory:".equals(path)) {
+            this.jdbcUrl = "jdbc:sqlite:file:safesphere_shared_mem?mode=memory&cache=shared";
+        } else {
+            this.jdbcUrl = "jdbc:sqlite:" + path;
+            createParentDirectory(path);
+        }
+    }
+
+    /**
+     * Creates the directory a file-backed database lives in.
+     *
+     * <p>SQLite will not create missing parent directories, so pointing
+     * {@code SAFESPHERE_DB_PATH} at a new location would otherwise fail on first start.
+     */
+    private static void createParentDirectory(String path) {
+        Path parent = Path.of(path).toAbsolutePath().getParent();
+        if (parent == null || Files.isDirectory(parent)) {
+            return;
+        }
+        try {
+            Files.createDirectories(parent);
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException("cannot create database directory " + parent, e);
+        }
     }
 
     private Database(String jdbcUrl, boolean rawUrl) {
@@ -76,11 +111,22 @@ public final class Database implements AutoCloseable {
         return connection;
     }
 
+    private void openKeeperIfEphemeral() {
+        if (jdbcUrl.contains("mode=memory") && keeper == null) {
+            try {
+                keeper = DriverManager.getConnection(jdbcUrl);
+            } catch (SQLException e) {
+                throw new IllegalStateException("cannot open the in-memory database", e);
+            }
+        }
+    }
+
     /**
      * Creates the schema if it is absent. Idempotent, so it is safe to call on every start. All
      * statements are {@code IF NOT EXISTS} and the applied version is recorded.
      */
     public void migrate() {
+        openKeeperIfEphemeral();
         try (Connection connection = openConnection();
              Statement statement = connection.createStatement()) {
 
@@ -177,8 +223,15 @@ public final class Database implements AutoCloseable {
 
     @Override
     public void close() {
-        // Connections are per-operation and already closed by their callers, so there is no pool to
-        // release. The method exists so callers can use try-with-resources uniformly.
+        if (keeper != null) {
+            try {
+                keeper.close();
+            } catch (SQLException e) {
+                // Nothing useful to do while shutting down.
+            } finally {
+                keeper = null;
+            }
+        }
     }
 
     /** Resolves {@link #DEFAULT_PATH} to an absolute path, creating the parent directory. */

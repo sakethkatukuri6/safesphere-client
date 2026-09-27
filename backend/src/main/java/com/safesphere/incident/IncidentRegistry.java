@@ -24,9 +24,15 @@ public final class IncidentRegistry {
         this.incidents = Objects.requireNonNull(incidents, "incidents is required");
     }
 
-    /** Registers a brand-new incident, which by definition starts in {@link FsmState#SAFE}. */
-    public void register(String capsuleId) {
-        engines.put(capsuleId, new EmergencyStateEngine());
+    /**
+     * Registers the engine that will track an incident.
+     *
+     * <p>The caller must register the very instance it then drives. Registering a separate engine
+     * and advancing a different one would leave the registry holding an untouched copy, and every
+     * later transition would be evaluated from the wrong state.
+     */
+    public void register(String capsuleId, EmergencyStateEngine engine) {
+        engines.put(capsuleId, Objects.requireNonNull(engine, "engine is required"));
     }
 
     /**
