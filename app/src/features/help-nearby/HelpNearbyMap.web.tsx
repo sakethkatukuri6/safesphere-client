@@ -5,7 +5,7 @@ import { space, radius } from '../../theme/tokens';
 import { MapPin } from '../../components/MapPin';
 import { Text } from '../../components/Text';
 import { Navigation } from 'lucide-react-native';
-import { formatCoordinates } from './HelpNearbyMap';
+import { formatCoordinates } from './mapUtils';
 
 export interface HelpNearbyMapProps {
   latitude: number;

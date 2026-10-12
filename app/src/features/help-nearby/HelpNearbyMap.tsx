@@ -12,18 +12,15 @@ import { useTheme } from '../../theme/ThemeContext';
 import { darkColors, space, radius, touch } from '../../theme/tokens';
 import { MapPin } from '../../components/MapPin';
 import { Text } from '../../components/Text';
-import { ExternalLink, Navigation } from 'lucide-react-native';
+import { Navigation } from 'lucide-react-native';
+import { formatCoordinates } from './mapUtils';
+
+export { formatCoordinates };
 
 export interface HelpNearbyMapProps {
   latitude: number;
   longitude: number;
   victimName: string;
-}
-
-export function formatCoordinates(lat: number, lng: number): string {
-  const latDir = lat >= 0 ? 'N' : 'S';
-  const lngDir = lng >= 0 ? 'E' : 'W';
-  return `${Math.abs(lat).toFixed(4)}° ${latDir}, ${Math.abs(lng).toFixed(4)}° ${lngDir}`;
 }
 
 // Nightwatch custom map styling derived strictly from tokens:
