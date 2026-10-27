@@ -4,7 +4,8 @@
     "strict": true,
     "paths": {
       "@/*": [
-        "./src/*"
+        "./src/*",
+        "./*"
       ],
       "@/assets/*": [
         "./assets/*"
@@ -16,6 +17,11 @@
     "src/**/*.tsx",
     "app/**/*.ts",
     "app/**/*.tsx",
+    "theme/**/*.ts",
+    "lib/**/*.ts",
+    "store/**/*.ts",
+    "components/**/*.ts",
+    "components/**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
   ],
