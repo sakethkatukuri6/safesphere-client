@@ -1,0 +1,44 @@
+# ==============================================================================
+# SafeSphere — Emergency Orchestration Platform Requirements
+# Citizen App (M1) + Core Backend Services (M4, M6)
+# ==============================================================================
+
+# --- Runtime & Platform Requirements ---
+node>=18.18.0
+npm>=9.0.0
+expo==57.0.31
+react==19.2.3
+react-native==0.86.3
+typescript==6.0.3
+java>=17
+maven>=3.8.0
+
+# --- Mobile Native Modules & Expo SDK Packages ---
+expo-router==57.0.29
+react-native-maps==1.27.2
+expo-location==57.0.22
+expo-battery==57.0.3
+expo-haptics==57.0.3
+expo-camera==57.0.0
+expo-av==57.0.0
+expo-image-picker==57.0.0
+expo-contacts==57.0.0
+expo-secure-store==57.0.4
+expo-sensors==57.0.3
+expo-network==57.0.3
+expo-notifications==57.0.24
+
+# --- State Management & UI Utilities ---
+zustand==5.0.15
+lucide-react-native==1.55.0
+react-native-svg==15.15.4
+react-native-reanimated==4.5.1
+react-native-gesture-handler==2.32.0
+react-native-safe-area-context==5.7.0
+react-native-screens==4.26.0
+
+# --- Backend Dependencies (Java / Maven) ---
+io.javalin:javalin==6.3.0
+org.xerial:sqlite-jdbc==3.46.0.0
+com.fasterxml.jackson.core:jackson-databind==2.17.2
+org.slf4j:slf4j-simple==2.0.13
